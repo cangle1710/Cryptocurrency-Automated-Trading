@@ -1,26 +1,23 @@
 package com.cat.marketdata;
 
+import com.cat.common.Constants;
 import com.cat.common.Pair;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.cat.common.L2OrderResponse;
 import com.cat.common.SnapShotOrderResponse;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.logging.Logger;
-
 import static com.cat.common.Constants.*;
-import static com.cat.common.Constants.BUY;
-import static com.cat.common.Constants.COIN_BASE_WEBSOCKET;
-import static com.cat.common.Constants.L2_UPDATE;
-import static com.cat.common.Constants.SNAPSHOT;
-import static com.cat.common.Constants.TYPE;
 import static com.cat.utils.OrderBookUtils.*;
 import static com.cat.utils.OrderBookUtils.constructJsonMessage;
 
@@ -80,7 +77,7 @@ public class OrderBookService {
     }
     private void subscribe() {
         try {
-            String subscribeJsonMessage = constructJsonMessage(Type.SUBSCRIBE, instrument, Channel.L2);
+            String subscribeJsonMessage = constructJsonMessage(Type.SUBSCRIBE, instrument, Constants.Channel.L2);
             // send subscribe message to web socket
             clientEndPoint.sendMessage(subscribeJsonMessage);
 
@@ -93,7 +90,7 @@ public class OrderBookService {
 
     private void unsubscribe(){
         // send unsubscribe message to web socket
-        String unsubscribeJsonMessage = constructJsonMessage(Type.UNSUBSCRIBE, instrument, Channel.L2);
+        String unsubscribeJsonMessage = constructJsonMessage(Type.UNSUBSCRIBE, instrument, Constants.Channel.L2);
         clientEndPoint.sendMessage(unsubscribeJsonMessage);
     }
 
@@ -103,8 +100,24 @@ public class OrderBookService {
         disconnect();
         logger.info("OrderBookService disabled...");
     }
-
+    private int index = 0;
     private void processMessage(String message){
+        index++;
+        ConnectionFactory factory = new ConnectionFactory();
+        try {
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+            channel.exchangeDeclare("logs", "fanout");
+
+            String rabbit_message = index + "info: " + message;
+            System.out.println(rabbit_message);
+            channel.basicPublish("logs", "", null, rabbit_message.getBytes("UTF-8"));
+        }
+        catch(Exception ex){
+
+        }
+
+
         final ObjectMapper mapper = new ObjectMapper();
 
         // adding custom serializer / deserializer for Json parsing
@@ -161,7 +174,7 @@ public class OrderBookService {
             sb.append(String.format("%.8f", size) + "\t\t]");
         }
 
-        System.out.print("\r" + sb.toString());
+//        System.out.print("\r" + sb.toString());
     }
 
     private void buildOrderBook(SnapShotOrderResponse snapShotOrderResponse){

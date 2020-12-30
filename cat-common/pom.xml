@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cat-order-router-service</artifactId>
+    <artifactId>cat-common</artifactId>
 
 
 </project>
