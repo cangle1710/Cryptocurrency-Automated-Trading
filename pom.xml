@@ -21,7 +21,7 @@
         <commons-lang3.version>3.10</commons-lang3.version>
         <rabbit-amqp-client.version>5.10.0</rabbit-amqp-client.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <coinbase-pro-java.version>0.11</coinbase-pro-java.version>
+
     </properties>
 
     <dependencies>
@@ -65,11 +65,7 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.coinbase.exchange</groupId>
-            <artifactId>coinbase-pro-java</artifactId>
-            <version>${coinbase-pro-java.version}</version>
-        </dependency>
+
     </dependencies>
 
     <modules>

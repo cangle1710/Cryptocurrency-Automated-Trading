@@ -49,11 +49,7 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.coinbase.exchange</groupId>
-            <artifactId>coinbase-pro-java</artifactId>
-            <version>${coinbase-pro-java.version}</version>
-        </dependency>
+
     </dependencies>
 
 </project>
